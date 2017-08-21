@@ -1,0 +1,29 @@
+{
+  "name": "login-site",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express-session": "^1.15.5",
+    "express": "^4.15.4",
+    "express-validator": "^3.2.1",
+    "mustache-express": "^1.2.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andersonmmi/login-site.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andersonmmi/login-site/issues"
+  },
+  "homepage": "https://github.com/andersonmmi/login-site#readme"
+}
