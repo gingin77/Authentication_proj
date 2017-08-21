@@ -46,17 +46,18 @@ app.use(session({ secret: 'keyboard cat', cookie: { maxAge: 60000 }}))
 app.get('/', function(req, res, next) {
   if (req.session.views) {
     req.session.views++
-    // console.log("views[pathname] = " + vists[pathname]);
     // res.setHeader('Content-Type', 'text/html')
     res.write('<p>views: ' + req.session.views + '</p>')
     res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
     res.end()
   } else {
     req.session.views = 1
-    res.end('welcome to the session demo. refresh!')
+    return res.redirect('/login')
   }
 })
 // Reference for  - parseurl(req).pathname https://stackoverflow.com/questions/17184791/node-js-url-parse-and-pathname-property
+
+// Reference on how to redirect to the login page: https://stackoverflow.com/questions/9346579/how-can-i-tell-when-an-html5-audio-element-has-finished-playing
 
 // if (app.get('env') === 'production') {
 //   app.set('trust proxy', 1) // trust first proxy
