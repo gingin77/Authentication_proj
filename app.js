@@ -10,8 +10,8 @@ const session = require('express-session');
 const app = express();
 const port = 3000;
 
-const loginRouter = require('./routes/login');
-const users = require('./users/users');
+// const loginRouter = require('./routes/login');
+const squirrel = require('./users/users');
 
 app.engine('mustache',mustache());
 app.set('view engine', 'mustache');
@@ -29,6 +29,10 @@ app.use(session({
 
 // Access the session as req.session; refer to the session object (that must be defined or you get an error)
 app.get('/', function(req, res, next) {
+  console.log("you want to know what ..views is, right?");
+  console.log(req.session.views);
+  console.log(typeof req.session.views);
+
   if (req.session.views) {
     req.session.views++
     // res.render('index', req.session.views, req.session.cookie.maxAge );
@@ -37,6 +41,7 @@ app.get('/', function(req, res, next) {
     res.end()
   }else {
     // res.write('<p>"You need to login"</p>')
+    // res.end('welcome to the session demo. refresh!')
     console.log("redirect???")
     return res.redirect('/login')
   }
@@ -44,25 +49,30 @@ app.get('/', function(req, res, next) {
 
 app.get('/login', function(req,res) {
   res.render('login');
+  // res.write('<p>"You should be on the login page now"</p>')
+  console.log("login page???")
 });
 
 app.post('/login', function(req, res){
+  console.log("app.post has been activated");
+  // res.render('login');
   let usernameInput = req.body.username;
   let passwordInput = req.body.password;
-  console.log(username);
-  authenticate(req, username, password);
+  console.log(usernameInput);
+  authenticate(req, usernameInput, passwordInput);
+
   if (req.session && req.session.authenticated){
-    res.render('index', { usernameInput: usernameInput });
+    req.session.views = 1;
+    res.redirect('/');
+    // res.render('index', { usernameInput: usernameInput });
   } else {
     res.redirect('/login');
   }
 })
 
-// arr.find(callback[, thisArg])
-
-function authenticate(req, username, password){
-  var authenticatedUser = data.users.find(function (users) {
-    if (username === users.username && password === users.password) {
+function authenticate(req, usernameInput, passwordInput){
+  var authenticatedUser = squirrel.users.find(function (users) {
+    if (usernameInput === users.username && passwordInput === users.password) {
       req.session.authenticated = true;
       console.log('User & Password Authenticated');
     } else {
@@ -76,15 +86,6 @@ function authenticate(req, username, password){
 app.listen(3000, function () {
   console.log('Successfully started express application!');
 })
-
-
-
-// app.post('/check', function(req, res){
-//   console.log("button clicked");
-// });
-
-
-
 
 // Reference for  - parseurl(req).pathname https://stackoverflow.com/questions/17184791/node-js-url-parse-and-pathname-property
 
