@@ -4,8 +4,8 @@ const parseurl = require('parseurl');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 // const sessionClient = require('client-sessions');
-// const expressValidator = require('express-validator');
-
+const expressValidator = require('express-validator');
+const validator = require('validator')
 // validator.isEmail('foo@bar.com'); //=> true
 
 const app = express();
@@ -20,21 +20,12 @@ app.set('views', './views');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(expressValidator());
+app.use(expressValidator());
 
-// let visitCount = "";
-let expireTime = "";
 let usernameInput = "";
 let passwordInput = "";
 let visitCount = "";
-
-// let pageObj = {
-//   "visitsFunction": function (){
-//     return function (visitCount){
-//       console.log("This is the visit count function" + visitCount);
-//     }
-//   }
-// }
+let expireTime = "";
 
 app.use(session({
   resave: false,
@@ -44,9 +35,10 @@ app.use(session({
 
 // Access the session as req.session; refer to the session object (that must be defined or you get an error)
 app.get('/', function(req, res, next) {
-  console.log("you want to know what ..views is, right?");
+  console.log("you want to know what req.session.views is, right?");
   console.log(req.session.views);
   console.log(typeof req.session.views);
+  // console.log("fun times");
 
   if (req.session.views) {
     visitCount = req.session.views++
@@ -54,11 +46,7 @@ app.get('/', function(req, res, next) {
     expireTime = req.session.cookie.maxAge/1000/60
     console.log(expireTime);
     res.render('index', { usernameInput: usernameInput, visitCount: visitCount, expirationTime: expireTime});
-    // , expirationTime: pageObj.expirationTime
-    // , visitCount, expireTime);
-    // ,visitCount, expireTime
-    // res.write('<p>views: ' + req.session.views + '</p>')
-    // res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
+
     // res.end()
 
   }else {
@@ -75,23 +63,66 @@ app.get('/login', function(req,res) {
   console.log("login page???")
 });
 
+
+
 app.post('/login', function(req, res){
   console.log("app.post has been activated");
-  // res.render('login');
-  usernameInput = req.body.username;
-  passwordInput = req.body.password;
-  console.log(usernameInput);
-  authenticate(req, usernameInput, passwordInput);
 
-  if (req.session && req.session.authenticated){
-    req.session.views = 1;
-    res.redirect('/');
-    console.log("You were authenticated and redirected to the homepage")
+  if (validator.isEmail(req.body.username)) {
+    // Render validation messages
+    console.log("Wonderful!!!!! You did enter an email... moving on....")
+    var html3 = '<p>Wonderful!!!!! You did enter an email... moving on....</p>';
+    res.send(html3);
+          //   usernameInput = req.body.username;
+          //   passwordInput = req.body.password;
+          //   console.log(usernameInput);
+          //   authenticate(req, usernameInput, passwordInput);
+          //
+          //   if (req.session && req.session.authenticated){
+          //     req.session.views = 1;
+          //     res.redirect('/');
+          //     console.log("You were authenticated and redirected to the homepage")
+          //   } else {
+          //     res.redirect('/login');
+          //     console.log("You were not authenticated")
+          //   }
+          // }
+
   } else {
-    res.redirect('/login');
-    console.log("You were not authenticated")
-  }
-})
+    var html2 = '<p>You did NOT enter an email address.</p>';
+    res.send(html2);
+    console.log("You did NOT enter an email address.");
+      }
+});
+
+// app.post('/login', function(req, res){
+//   console.log("app.post has been activated");
+//
+//   req.check('email', "invalid email address").isEmail();
+//         var errors = req.getValidationResult();
+//          if (!errors) {
+//            // Render validation error messages
+//            var html2 = '<p>You did NOT enter an email address.</p>';
+//            res.send(html2);
+//            console.log("You did NOT enter an email address.");
+//          } else {
+//               //  res.redirect('/');
+//                console.log("You did enter an email... moving on....")
+//                usernameInput = req.body.username;
+//                passwordInput = req.body.password;
+//                console.log(usernameInput);
+//                authenticate(req, usernameInput, passwordInput);
+//
+//                if (req.session && req.session.authenticated){
+//                  req.session.views = 1;
+//                  res.redirect('/');
+//                  console.log("You were authenticated and redirected to the homepage")
+//                } else {
+//                  res.redirect('/login');
+//                  console.log("You were not authenticated")
+//                }
+//              }
+// });
 
 function authenticate(req, usernameInput, passwordInput){
   console.log("The authenticate function was initiated")
@@ -124,3 +155,14 @@ app.listen(3000, function () {
 //   res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
 //   res.end()
 // })
+
+
+// this is what printed out the promise..... in the app.post function
+// req.check('username', "valid email address").isEmail();
+//
+//   var valid = req.getValidationResult().then(result =>{
+//     res.send(result.array())
+//     console.log(result.array())
+//
+//   })
+// console.log(valid)
