@@ -3,10 +3,12 @@ const mustacheExpress = require('mustache-express');
 const parseurl = require('parseurl');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-// const sessionClient = require('client-sessions');
-const expressValidator = require('express-validator');
-const validator = require('validator')
+const expressValidator = require('express-validator'); /* "An express.js middleware for validator."*/
+const validator = require('validator')/*"A library of string validators and sanitizers.""*/
+// ^^^ if the above line is commented out, then you get an error related to line 71, ReferenceError: validator is not defined
+
 // validator.isEmail('foo@bar.com'); //=> true
+// ^^^^This is taken straight from the documentation for validator.js and is the model for the line I used, which worked.
 
 const app = express();
 const port = 3000;
@@ -20,7 +22,9 @@ app.set('views', './views');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(expressValidator());
+app.use(expressValidator());/* this line needs to be expressValidator and won't work if set to validator*/
+// this line must be immediately after any of the bodyParser middlewares!
+// ^^straight from the documentation for https://github.com/ctavan/express-validator I cannot find an app.use line for validator
 
 let usernameInput = "";
 let passwordInput = "";
@@ -69,7 +73,7 @@ app.post('/login', function(req, res){
   console.log("app.post has been activated");
 
   if (validator.isEmail(req.body.username)) {
-    // Render validation messages
+    // Render validation messages; ^^expressValidator can NOT be used instead of validator
     console.log("Wonderful!!!!! You did enter an email... moving on....")
     var html3 = '<p>Wonderful!!!!! You did enter an email... moving on....</p>';
     // res.send(html3);
