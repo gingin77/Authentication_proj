@@ -72,26 +72,25 @@ app.post('/login', function(req, res){
     // Render validation messages
     console.log("Wonderful!!!!! You did enter an email... moving on....")
     var html3 = '<p>Wonderful!!!!! You did enter an email... moving on....</p>';
-    res.send(html3);
-          //   usernameInput = req.body.username;
-          //   passwordInput = req.body.password;
-          //   console.log(usernameInput);
-          //   authenticate(req, usernameInput, passwordInput);
-          //
-          //   if (req.session && req.session.authenticated){
-          //     req.session.views = 1;
-          //     res.redirect('/');
-          //     console.log("You were authenticated and redirected to the homepage")
-          //   } else {
-          //     res.redirect('/login');
-          //     console.log("You were not authenticated")
-          //   }
-          // }
+    // res.send(html3);
+            usernameInput = req.body.username;
+            passwordInput = req.body.password;
+            console.log(usernameInput);
+            authenticate(req, usernameInput, passwordInput);
 
+            if (req.session && req.session.authenticated){
+              req.session.views = 1;
+              res.redirect('/');
+              console.log("You were authenticated and redirected to the homepage")
+            } else {
+              res.redirect('/login');
+              console.log("You were not authenticated")
+            }
   } else {
-    var html2 = '<p>You did NOT enter an email address.</p>';
-    res.send(html2);
+    // var html2 = '<p>You did NOT enter an email address.</p>';
+    // res.send(html2);
     console.log("You did NOT enter an email address.");
+    res.redirect('/login');
       }
 });
 
