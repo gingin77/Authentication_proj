@@ -1,8 +1,9 @@
 const express = require('express');
-const mustache = require('mustache-express');
+const mustacheExpress = require('mustache-express');
 const parseurl = require('parseurl');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+// const sessionClient = require('client-sessions');
 // const expressValidator = require('express-validator');
 
 // validator.isEmail('foo@bar.com'); //=> true
@@ -13,13 +14,27 @@ const port = 3000;
 // const loginRouter = require('./routes/login');
 const squirrel = require('./users/users');
 
-app.engine('mustache',mustache());
+app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
-app.set('views','./views');
+app.set('views', './views');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(expressValidator());
+
+// let visitCount = "";
+let expireTime = "";
+let usernameInput = "";
+let passwordInput = "";
+let visitCount = "";
+
+// let pageObj = {
+//   "visitsFunction": function (){
+//     return function (visitCount){
+//       console.log("This is the visit count function" + visitCount);
+//     }
+//   }
+// }
 
 app.use(session({
   resave: false,
@@ -34,11 +49,18 @@ app.get('/', function(req, res, next) {
   console.log(typeof req.session.views);
 
   if (req.session.views) {
-    req.session.views++
-    // res.render('index', req.session.views, req.session.cookie.maxAge );
-    res.write('<p>views: ' + req.session.views + '</p>')
-    res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
-    res.end()
+    visitCount = req.session.views++
+    console.log(visitCount)
+    expireTime = req.session.cookie.maxAge/1000/60
+    console.log(expireTime);
+    res.render('index', { usernameInput: usernameInput, visitCount: visitCount, expirationTime: expireTime});
+    // , expirationTime: pageObj.expirationTime
+    // , visitCount, expireTime);
+    // ,visitCount, expireTime
+    // res.write('<p>views: ' + req.session.views + '</p>')
+    // res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
+    // res.end()
+
   }else {
     // res.write('<p>"You need to login"</p>')
     // res.end('welcome to the session demo. refresh!')
@@ -56,27 +78,30 @@ app.get('/login', function(req,res) {
 app.post('/login', function(req, res){
   console.log("app.post has been activated");
   // res.render('login');
-  let usernameInput = req.body.username;
-  let passwordInput = req.body.password;
+  usernameInput = req.body.username;
+  passwordInput = req.body.password;
   console.log(usernameInput);
   authenticate(req, usernameInput, passwordInput);
 
   if (req.session && req.session.authenticated){
     req.session.views = 1;
     res.redirect('/');
-    // res.render('index', { usernameInput: usernameInput });
+    console.log("You were authenticated and redirected to the homepage")
   } else {
     res.redirect('/login');
+    console.log("You were not authenticated")
   }
 })
 
 function authenticate(req, usernameInput, passwordInput){
+  console.log("The authenticate function was initiated")
   var authenticatedUser = squirrel.users.find(function (users) {
     if (usernameInput === users.username && passwordInput === users.password) {
       req.session.authenticated = true;
       console.log('User & Password Authenticated');
     } else {
       return false
+      console.log("wrong username AND/OR password")
     }
   });
   console.log(req.session);

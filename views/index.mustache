@@ -5,6 +5,15 @@
     <title>Home</title>
   </head>
   <body>
-    <h1>Welcome, ${{usernameInput}}</h1>
+    <h1>Welcome, {{#usernameInput}}{{.}}{{/usernameInput}}</h1>
+    <p>You have visited this page {{visitCount}} times.</p>
+    <p>Your session will expires in {{expirationTime}} minutes.</p>
   </body>
 </html>
+
+
+<!-- {{#todos}}
+  <form action="/todo2/" method="post">
+    <li class="todo_list_item"><button type="text" name="marked_as_complete">Mark as complete</button>      {{.}}</li>
+  </form>
+{{/todos}} -->
